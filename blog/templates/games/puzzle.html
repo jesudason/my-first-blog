@@ -4,39 +4,30 @@
 
 <body class="page">
     <div id="game-over">
-        <img class="dancing-man" src="https://orig00.deviantart.net/7ae0/f/2016/120/e/d/dancing_baby___very_cute____by_kozabanana-da0ru9f.gif" alt="">
-        <div class="victory-message">
-            <h3>Great Job</h3>
-            <p>jljafßk;fajdl;fjadls;k</p>
+        <div class="game-over__panel">
+            <img class="dancing-man" src="https://orig00.deviantart.net/7ae0/f/2016/120/e/d/dancing_baby___very_cute____by_kozabanana-da0ru9f.gif" alt="">
+<!--             </div>
+            <div class="col-6">         -->
+                <div class="text-area">
+                    <h3>Great Job</h3>
+                    <p id="puzzle-text"></p>
+                </div>
+            <!-- </div> -->
         </div>
-        <a href="{% url 'post_draft_list' %}" class="new-game">New game</a>
+        <div class="redirect-btns">        
+            <a href="{% url 'puzzle_game' %}" id="new-game" class="game-over-btn">New game</a>
+            <a href="{% url 'post_list' %}" class="game-over-btn">Home</a>
+        </div>
     </div>
     <div class="center-content">
          <input type="checkbox" name="options" id="options" style="display: none;">
          <div class="start-controls">          
             <label for="options" class="controls no-select">SETTINGS</label>
-            <!-- <button value="Refresh Page" class="reload" onClick="puzzle1.pz.init();">RELOAD</button> -->
+            <button value="Refresh Page" class="controls no-select" onClick=location.reload() >RELOAD</button>
             <div data-attr="reset" class="controls no-select" style="display: inline-block;">SHUFFLE</div>       
          </div>
         <div id="puzzle1" style="padding: 20px;"></div>
         <div class="options">
-    <!--         <div class="fgroup grid">
-                <div class="fieldset">
-                    <label for="numrows"># of rows</label>
-                    <input type="number" id="numrows" name="numrows" value="3" min="1" max="10">
-
-                    <label for="numcolumns"># of columns</label>
-                    <input type="number" id="numcolumns" name="numcolumns" value="3" min="1" max="10">
-                </div>
-            </div>
-
-            <div class="fgroup image">
-                <div class="fieldset" style="text-align: left;">
-                    <label for="image">Image URL</label>
-                    <input type="text" id="image" name="image" style="width: 100%;" value="">
-                </div>
-            </div>
-     -->
             <div class="fgroup no-select">
                 <div class="fieldset difficulty">
                     <input type="radio" id="easy" name="difficulty" value="easy">
@@ -95,14 +86,14 @@
             const opts = {};
 
             // var puzzles = ["https://images.unsplash.com/photo-1548161955-40def7e9742d", "../static/images/gradient.jpg"];
-            var randomPuzzle = puzzles[Object.keys(puzzles)[Math.floor(Math.random()*puzzles.length)]].url;
+            var randomPuzzle = puzzles[Object.keys(puzzles)[Math.floor(Math.random()*puzzles.length)]];
 
             // randomPuzzle = puzzles[Math.floor(Math.random()*puzzles.length)];
             const puzzle1 = document.querySelector('#puzzle1');
             
             puzzle1.pz = new Puzzle({
                 el           : puzzle1,
-                image       : randomPuzzle,
+                image       : randomPuzzle.url,
                 difficulty   : "normal",
                 dragenter    : function(evt){onDragEnter(evt)},
                 dragleave    : function(evt){onDragLeave(evt)},
@@ -111,7 +102,15 @@
                 finished     : function(evt){puzzleFin(evt)},
             }).init();
 
+            // Gameover screen 
+            const puzzleText = randomPuzzle.title;
+            const messageArea = document.getElementById('puzzle-text');
+            messageArea.innerHTML += puzzleText;
+            
             // Puzzle events
+            document.getElementById('new-game').addEventListener('click', function() {
+                gameOver.style.display = 'none';
+            })
 
             function onDragEnter(evt) {
                 if (!evt.target.draggable) { 
@@ -134,7 +133,15 @@
             }
 
             function puzzleFin(evt) {
-                  // document.getElementById('game-over').style.display = 'block';
+                const gameOverScreen = document.getElementById('game-over');
+                setTimeout(function() {
+                    gameOverScreen.style.visibility = 'visible';
+                    gameOverScreen.style.opacity = 1;
+                    gameOverScreen.style.height = "100%";
+                    document.body.style.overflow = 'hidden';
+                }.bind(evt),700);
+
+                
                 setTimeout(function() {
                     Object.assign(evt.self.fullImg.style,{'opacity':1,'z-index':1});
                 }.bind(evt),300);

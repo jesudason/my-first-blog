@@ -797,8 +797,8 @@ document.addEventListener('DOMContentLoaded',function(){
 
             instance.grid = document.createElement('ul');
             if (difficulty === 'easy') {
-                numcolumns = 3;
-                numrows = 3;
+                numcolumns = 2;
+                numrows = 2;
             } else if (difficulty === 'normal') {
                 numcolumns = 4;
                 numrows = 4;
