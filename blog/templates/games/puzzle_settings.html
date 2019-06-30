@@ -1,0 +1,31 @@
+{% extends 'blog/base.html' %}
+{% block content %}
+<div class="puzzle_new">
+    <h2>New puzzle</h2>
+    <form method="POST" class="post-form">{% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="save btn btn-default">Save</button>
+    </form>
+  </div>
+
+<ul>
+  <li>
+    Update puzzle urls here
+  </li>
+</ul>
+    <div class="puzzle_settings">
+      <a href="{% url 'puzzle_new' %}" class="top-menu"><span class="glyphicon glyphicon-plus"></span></a>
+      <ul>
+        {% for puzzle in puzzles %}
+        <li pk=puzzle.pk >
+            {{ puzzle.url }} + {{ puzzle.title }}
+            {% if user.is_authenticated %}
+               <a class="btn btn-default" href="{% url 'puzzle_remove' pk=puzzle.pk %}"><span class="glyphicon glyphicon-remove"></span></a>
+          {% endif %}
+ 
+        </li>
+        {% endfor %}
+      </ul>
+    </div>            
+{% endblock %}
+

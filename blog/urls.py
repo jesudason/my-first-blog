@@ -12,4 +12,7 @@ urlpatterns = [
     path('post/<int:pk>/comment/', views.add_comment_to_post, name='add_comment_to_post'),
     path('comment/<int:pk>/approve/', views.comment_approve, name='comment_approve'),
     path('comment/<int:pk>/remove/', views.comment_remove, name='comment_remove'),
+    path('games/puzzle', views.puzzle_game, name='puzzle_game'),
+    path('games/puzzle_settings', views.puzzle_new, name='puzzle_new'),
+    path('puzzle/<int:pk>/remove/', views.puzzle_remove, name='puzzle_remove'),   
 ]

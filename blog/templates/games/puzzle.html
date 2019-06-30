@@ -1,0 +1,180 @@
+{% extends 'blog/base.html' %}
+
+{% block content %}
+
+<body class="page">
+    <div id="game-over">
+        <img class="dancing-man" src="https://orig00.deviantart.net/7ae0/f/2016/120/e/d/dancing_baby___very_cute____by_kozabanana-da0ru9f.gif" alt="">
+        <div class="victory-message">
+            <h3>Great Job</h3>
+            <p>jljafßk;fajdl;fjadls;k</p>
+        </div>
+        <a href="{% url 'post_draft_list' %}" class="new-game">New game</a>
+    </div>
+    <div class="center-content">
+         <input type="checkbox" name="options" id="options" style="display: none;">
+         <div class="start-controls">          
+            <label for="options" class="controls no-select">SETTINGS</label>
+            <!-- <button value="Refresh Page" class="reload" onClick="puzzle1.pz.init();">RELOAD</button> -->
+            <div data-attr="reset" class="controls no-select" style="display: inline-block;">SHUFFLE</div>       
+         </div>
+        <div id="puzzle1" style="padding: 20px;"></div>
+        <div class="options">
+    <!--         <div class="fgroup grid">
+                <div class="fieldset">
+                    <label for="numrows"># of rows</label>
+                    <input type="number" id="numrows" name="numrows" value="3" min="1" max="10">
+
+                    <label for="numcolumns"># of columns</label>
+                    <input type="number" id="numcolumns" name="numcolumns" value="3" min="1" max="10">
+                </div>
+            </div>
+
+            <div class="fgroup image">
+                <div class="fieldset" style="text-align: left;">
+                    <label for="image">Image URL</label>
+                    <input type="text" id="image" name="image" style="width: 100%;" value="">
+                </div>
+            </div>
+     -->
+            <div class="fgroup no-select">
+                <div class="fieldset difficulty">
+                    <input type="radio" id="easy" name="difficulty" value="easy">
+                    <label for="easy">Easy</label>
+
+                    <input type="radio" id="normal" name="difficulty" value="normal" checked>
+                    <label for="normal">Normal</label>
+
+                    <input type="radio" id="hard" name="difficulty" value="hard">
+                    <label for="hard">Hard</label>
+
+                    <input type="radio" id="expert" name="difficulty" value="expert">
+                    <label for="expert">Expert</label>
+
+                    <input type="radio" id="random" name="difficulty" value="random">
+                    <label for="random">Random</label>                
+                </div>
+            </div>
+
+            <div class="btngroup">
+                <div class="ui-btn no-select" data-attr="reset">UPDATE</div>
+            </div>
+        </div>
+
+    <!-- </div> -->
+
+
+    <script type="text/javascript">
+
+        document.addEventListener('DOMContentLoaded',function() {
+            function getURLParameter(sParam) {
+                const sPageURL = decodeURIComponent(window.location.search.substring(1)),
+                    sURLVariables = sPageURL.split('&');
+                let sParameterName,
+                    i;
+
+                for (i = 0; i < sURLVariables.length; i++) {
+                    sParameterName = sURLVariables[i].split('=');
+
+                    if (sParameterName[0] === sParam) {
+                        return sParameterName[1] === undefined ? true : sParameterName[1];
+                    }
+                }
+            }
+
+            var puzzles = [
+                {% for puzzle in puzzles %}
+                    {% if not forloop.first %},{% endif %}
+                    {
+                        title: "{{ puzzle.title }}",
+                        url: "{{ puzzle.url }}",
+                    }
+                {% endfor %}
+            ]            
+            
+            const opts = {};
+
+            // var puzzles = ["https://images.unsplash.com/photo-1548161955-40def7e9742d", "../static/images/gradient.jpg"];
+            var randomPuzzle = puzzles[Object.keys(puzzles)[Math.floor(Math.random()*puzzles.length)]].url;
+
+            // randomPuzzle = puzzles[Math.floor(Math.random()*puzzles.length)];
+            const puzzle1 = document.querySelector('#puzzle1');
+            
+            puzzle1.pz = new Puzzle({
+                el           : puzzle1,
+                image       : randomPuzzle,
+                difficulty   : "normal",
+                dragenter    : function(evt){onDragEnter(evt)},
+                dragleave    : function(evt){onDragLeave(evt)},
+                mousedown    : function(evt){onMouseDown(evt)},
+                mouseup      : function(evt){onMouseUp(evt)},
+                finished     : function(evt){puzzleFin(evt)},
+            }).init();
+
+            // Puzzle events
+
+            function onDragEnter(evt) {
+                if (!evt.target.draggable) { 
+                    evt.target.classList.add('highlight');
+                }
+            }
+
+            function onDragLeave(evt) {
+                if (!evt.target.draggable) {
+                    evt.target.classList.remove('highlight');
+                }
+            }
+
+            function onMouseDown(evt) {
+                evt.target.children[0].classList.add('highlight');
+            }
+
+            function onMouseUp(evt) {
+                evt.target.children[0].classList.remove('highlight');
+            }
+
+            function puzzleFin(evt) {
+                  // document.getElementById('game-over').style.display = 'block';
+                setTimeout(function() {
+                    Object.assign(evt.self.fullImg.style,{'opacity':1,'z-index':1});
+                }.bind(evt),300);
+
+            }
+
+            // Update buttons
+            document.querySelectorAll('div[data-attr="reset"]').forEach(function(item){
+                item.addEventListener('click',function(evt){
+                    updatePuzzle(evt);
+                    document.querySelectorAll('input[name="options"]')[0].checked = false;
+                });
+            });
+            
+            // Make sure number inputs are between 1 and 10
+            document.querySelectorAll('input[type="number"]').forEach(function(item){
+                item.addEventListener('change',function(){
+                    if (Number(this.value) > 10) {
+                        this.value = 10;
+                    } else if (Number(this.value) <= 0) {
+                        this.value = 1;
+                    }
+                });
+            });
+
+            // Update puzzle and reinitialize
+            function updatePuzzle() {
+                document.querySelectorAll('.options input').forEach(function(item){
+                    if (item.value.length && item.type === "text" || item.type === "number") {
+                        opts[item.name] = item.value;
+                    }
+
+                    if (item.value.length && item.type === "radio" && item.checked) {
+                        opts[item.name] = item.value;
+                    }
+                });
+                puzzle1.pz.usropts = opts;
+                puzzle1.pz.init();      
+            }
+        });
+    </script>
+</body>
+{% endblock %}

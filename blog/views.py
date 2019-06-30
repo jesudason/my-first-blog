@@ -1,10 +1,10 @@
 from django.shortcuts import render
 from django.utils import timezone
-from .models import Post, Comment
+from .models import Post, Comment, Puzzle
 from django.shortcuts import render, get_object_or_404
 from django.shortcuts import redirect
 from django.contrib.auth.decorators import login_required
-from .forms import PostForm, CommentForm
+from .forms import PostForm, CommentForm, PuzzleForm
 
 
 def post_list(request):
@@ -75,6 +75,11 @@ def add_comment_to_post(request, pk):
         form = CommentForm()
     return render(request, 'blog/add_comment_to_post.html', {'form': form})
 
+# @login_required
+# def puzzle_settings(request):
+#     puzzles = Puzzle.objects.all()
+#     return render(request, 'games/puzzle_settings.html', {'puzzles': puzzles})
+
 @login_required
 def comment_approve(request, pk):
     comment = get_object_or_404(Comment, pk=pk)
@@ -86,3 +91,27 @@ def comment_remove(request, pk):
     comment = get_object_or_404(Comment, pk=pk)
     comment.delete()
     return redirect('post_detail', pk=comment.post.pk)
+
+@login_required
+def puzzle_remove(request, pk):
+    puzzle = get_object_or_404(Puzzle, pk=pk)
+    puzzle.delete()
+    return redirect('puzzle_new')
+
+@login_required
+def puzzle_new(request):
+    if request.method == "POST":
+        form = PuzzleForm(request.POST)
+        if form.is_valid():
+            puzzle = form.save(commit=False)
+            # puzzle.url = str(puzzle.url)
+            # puzzle.title = str(puzzle.title)
+            puzzle.save()
+    else:
+        form = PuzzleForm()
+    puzzles = Puzzle.objects.all()
+    return render(request, 'games/puzzle_settings.html', {'form': form, 'puzzles': puzzles})
+
+def puzzle_game(request):
+    puzzles = Puzzle.objects.all()
+    return render(request, 'games/puzzle.html', {'puzzles': puzzles}) 
